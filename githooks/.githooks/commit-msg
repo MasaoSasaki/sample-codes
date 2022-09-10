@@ -1,11 +1,41 @@
 #!/bin/bash
 
-echo "Hooks commit-msg"
+echo -e "\033[37;1mHooks commit-msg\033[0;39m"
+# コミットメッセージ
 msg="$(cat "$1")"
+# 終了コード
+code=0
 
-# issue番号の確認
-if [[ "$msg" != *\#* ]]; then
-    echo "コミットメッセージ: $msg"
-    echo "コミットメッセージにissue番号('#')が含まれていません。"
-    exit 1
+# Prefixの存在チェック
+readonly CORRECT_PREFIXES=("feat" "fix" "docs" "style" "refactor" "pref" "test" "chore")
+## 各要素に": "を追加
+for i in "${!CORRECT_PREFIXES[@]}";
+do
+  correct_prefixes[i]="${CORRECT_PREFIXES[i]}: "
+done
+## 半角スペース(" ")の区切り文字をパイプ("|")に変更
+prefixes="$(IFS="|"; echo "${correct_prefixes[*]}")"
+if ! echo "$msg" | grep -Eq "${prefixes}";
+then
+  echo -e "\033[31;1m================================================================"
+  echo -e "コミットメッセージにPrefixが含まれていません。"
+  echo -e ""
+  echo -e "Prefix"
+  echo -e "  ${correct_prefixes[*]}"
+  echo -e "================================================================\033[0;39m"
+  code=1
 fi
+
+# issue番号の存在チェック
+issue_number="\#[1-9]"
+if ! echo "$msg" | grep -q "${issue_number}";
+then
+  echo -e "\033[31;1m================================================================"
+  echo -e "コミットメッセージにissue番号が含まれていません。"
+  echo -e ""
+  echo -e "Example: #1234"
+  echo -e "================================================================\033[0;39m"
+  code=1
+fi
+
+exit ${code}

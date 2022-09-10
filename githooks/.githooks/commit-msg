@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "Hooks commit-msg"
+msg="$(cat "$1")"
+
+# issue番号の確認
+if [[ "$msg" != *\#* ]]; then
+    echo "コミットメッセージ: $msg"
+    echo "コミットメッセージにissue番号('#')が含まれていません。"
+    exit 1
+fi

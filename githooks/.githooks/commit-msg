@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -e "\033[37;1mHooks commit-msg\033[0;39m"
+echo -e "\033[37;1mRunning Hooks: commit-msg\033[0;39m"
 # コミットメッセージ
 msg="$(cat "$1")"
 # 終了コード

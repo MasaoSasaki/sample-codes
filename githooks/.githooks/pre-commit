@@ -1,0 +1,37 @@
+#!/bin/bash
+
+echo -e "\033[37;1m🪝 Running Git Hooks: pre-commit\033[0m"
+
+# 現在のブランチ名を定義
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+readonly BRANCH_NAME
+# 終了コードを定義。0: OK, 1: NG
+code=0
+
+# コミットするブランチ名のチェック
+echo -en " - コミットするブランチ名のチェック: "
+## コミットを拒否するブランチ名を定義
+readonly INCORRECT_BRANCHES=("master" "main")
+if echo "${INCORRECT_BRANCHES[@]}" | grep -q "$BRANCH_NAME"; then
+  echo -e "\033[31;22mNG"
+  echo -e "================================================================"
+  echo -e "${BRANCH_NAME}ブランチへのコミットは禁止されています。"
+  echo -e ""
+  echo -e "禁止されているブランチ"
+  echo -e "  ${INCORRECT_BRANCHES[*]}"
+  echo -e "================================================================\033[0m\n"
+  code=1
+else
+  echo -e "\033[32;22mOK\033[0m"
+fi
+
+# 終了宣言
+if [ ${code} -eq 0 ]; then
+  echo ""
+  echo -e "\033[32;1m✨ALL PASS!!\033[0m\n\n"
+else
+  echo ""
+  echo -e "\033[31;1mGit Hooks: pre-commit: NG\033[0m\n\n"
+fi
+
+exit ${code}
